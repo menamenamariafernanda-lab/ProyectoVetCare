@@ -223,6 +223,22 @@ class GestionUsuarios:
             print(f"✅ Usuario ID {usuario_id} ahora tiene rol '{nuevo_rol}'.")
         return ok
 
+    def desactivar_usuario(self, usuario_id: int) -> bool:
+        """Desactiva un usuario por ID (eliminación lógica, no física)."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE usuarios SET activo = 0 WHERE id = ?", (usuario_id,)
+        )
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Usuario ID {usuario_id} desactivado.")
+        else:
+            print(f"❌ Usuario ID {usuario_id} no encontrado.")
+        return ok
+
     def tiene_permiso(self, usuario: dict, permiso: str) -> bool:
         rol = usuario.get("rol", "")
         perms = PERMISOS.get(rol, set())
@@ -374,6 +390,28 @@ class GestionFacturacion:
         print(f"  {'IVA (19%)':>44}: ${f['iva']:>9,.0f}")
         print(f"  {'TOTAL':>44}: ${f['total']:>9,.0f}")
         print("═"*55)
+
+    def anular_factura(self, factura_id: int) -> bool:
+        """Anula una factura cambiando su estado a 'Anulada'. No elimina el registro (trazabilidad contable)."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT estado FROM facturas WHERE id = ?", (factura_id,))
+        row = cur.fetchone()
+        if not row:
+            conn.close()
+            print(f"❌ Factura ID {factura_id} no encontrada.")
+            return False
+        if row["estado"] == "Pagada":
+            conn.close()
+            print(f"❌ No se puede anular la factura ID {factura_id}: ya está pagada.")
+            return False
+        cur.execute(
+            "UPDATE facturas SET estado = 'Anulada' WHERE id = ?", (factura_id,)
+        )
+        conn.commit()
+        conn.close()
+        print(f"✅ Factura ID {factura_id} anulada.")
+        return True
 
     def buscar_facturas(self, dueno_nombre: str = "", fecha: str = "",
                         estado: str = "") -> list:

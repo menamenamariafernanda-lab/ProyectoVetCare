@@ -163,6 +163,47 @@ class GestionPacientes:
             print(f"❌ Mascota ID {mascota_id} no encontrada.")
         return ok
 
+    def eliminar_mascota(self, mascota_id: int) -> bool:
+        """Elimina una mascota por ID. No se puede eliminar si tiene citas activas."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT COUNT(*) AS total FROM citas WHERE mascota_id = ? AND estado NOT IN ('Cancelada','Completada')",
+            (mascota_id,)
+        )
+        if cur.fetchone()["total"] > 0:
+            conn.close()
+            print(f"❌ No se puede eliminar: la mascota ID {mascota_id} tiene citas activas.")
+            return False
+        cur.execute("DELETE FROM mascotas WHERE id = ?", (mascota_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Mascota ID {mascota_id} eliminada.")
+        else:
+            print(f"❌ Mascota ID {mascota_id} no encontrada.")
+        return ok
+
+    def eliminar_dueno(self, dueno_id: int) -> bool:
+        """Elimina un dueño por ID. No se puede eliminar si tiene mascotas registradas."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) AS total FROM mascotas WHERE dueno_id = ?", (dueno_id,))
+        if cur.fetchone()["total"] > 0:
+            conn.close()
+            print(f"❌ No se puede eliminar: el dueño ID {dueno_id} tiene mascotas registradas.")
+            return False
+        cur.execute("DELETE FROM duenos WHERE id = ?", (dueno_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Dueño ID {dueno_id} eliminado.")
+        else:
+            print(f"❌ Dueño ID {dueno_id} no encontrado.")
+        return ok
+
     def buscar_mascota(self, termino: str) -> list:
         """Búsqueda por nombre de mascota, especie o nombre del dueño."""
         conn = get_connection()
@@ -256,6 +297,34 @@ class HistorialClinico:
         resultados = [dict(r) for r in cur.fetchall()]
         conn.close()
         return resultados
+
+    def eliminar_consulta(self, historial_id: int) -> bool:
+        """Elimina un registro del historial clínico por ID."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM historial_clinico WHERE id = ?", (historial_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Consulta ID {historial_id} eliminada del historial.")
+        else:
+            print(f"❌ Consulta ID {historial_id} no encontrada.")
+        return ok
+
+    def eliminar_vacuna(self, vacuna_id: int) -> bool:
+        """Elimina un registro de vacuna por ID."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM vacunas WHERE id = ?", (vacuna_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Vacuna ID {vacuna_id} eliminada.")
+        else:
+            print(f"❌ Vacuna ID {vacuna_id} no encontrada.")
+        return ok
 
     def registrar_vacuna(self, mascota_id: int, veterinario_id: int,
                         tipo_vacuna: str, proxima_dosis: str = "") -> int:

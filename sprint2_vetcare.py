@@ -155,6 +155,34 @@ class GestionDiagnosticos:
         conn.close()
         return resultados
 
+    def eliminar_diagnostico(self, historial_id: int) -> bool:
+        """Elimina un diagnóstico del historial clínico por ID."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM historial_clinico WHERE id = ?", (historial_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Diagnóstico ID {historial_id} eliminado.")
+        else:
+            print(f"❌ Diagnóstico ID {historial_id} no encontrado.")
+        return ok
+
+    def eliminar_tratamiento(self, tratamiento_id: int) -> bool:
+        """Elimina un tratamiento por ID."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM tratamientos WHERE id = ?", (tratamiento_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Tratamiento ID {tratamiento_id} eliminado.")
+        else:
+            print(f"❌ Tratamiento ID {tratamiento_id} no encontrado.")
+        return ok
+
     def evolucion_mascota(self, mascota_id: int) -> list:
         """Historial completo: diagnósticos + tratamientos."""
         conn = get_connection()
@@ -361,6 +389,21 @@ class GestionCirugias:
         conn.close()
         print(f"✅ Cirugía '{procedimiento}' registrada (ID {cid}).")
         return cid
+
+    def eliminar_cirugia(self, cirugia_id: int) -> bool:
+        """Elimina un registro de cirugía por ID. También elimina su postoperatorio."""
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM postoperatorio WHERE cirugia_id = ?", (cirugia_id,))
+        cur.execute("DELETE FROM cirugias WHERE id = ?", (cirugia_id,))
+        conn.commit()
+        ok = cur.rowcount > 0
+        conn.close()
+        if ok:
+            print(f"✅ Cirugía ID {cirugia_id} eliminada (y su postoperatorio si existía).")
+        else:
+            print(f"❌ Cirugía ID {cirugia_id} no encontrada.")
+        return ok
 
     def registrar_postoperatorio(self, cirugia_id: int, evolucion: str,
                                 tratamiento: str,
