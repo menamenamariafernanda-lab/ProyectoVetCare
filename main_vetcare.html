@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VetCare — Sistema de Gestión Veterinaria</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #f5f3ef;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #e2ddd6;
+    --text: #1a1916;
+    --muted: #7a7670;
+    --accent: #2d6a4f;
+    --accent2: #40916c;
+    --accent-light: #d8f3dc;
+    --danger: #c62828;
+    --danger-light: #fdecea;
+    --warn: #e65100;
+    --warn-light: #fff3e0;
+    --info: #1565c0;
+    --info-light: #e3f2fd;
+    --amber: #f57f17;
+    --amber-light: #fffde7;
+    --radius: 10px;
+    --font: 'DM Sans', system-ui, sans-serif;
+    --mono: 'DM Mono', monospace;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 220px;
+    min-height: 100vh;
+    background: var(--text);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo {
+    padding: 22px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+    display: block;
+  }
+  .logo h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: #fff;
+  }
+  .logo p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  nav {
+    padding: 12px 10px;
+    flex: 1;
+  }
+
+  .nav-group-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    padding: 12px 10px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.65);
+    transition: all 0.15s;
+    margin-bottom: 1px;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .nav-item.active { background: var(--accent); color: #fff; font-weight: 500; }
+  .nav-item .icon { font-size: 15px; width: 18px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 14px 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .user-info p { font-size: 12px; font-weight: 500; color: #fff; }
+  .user-info span { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* ── Main content ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar h2 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .topbar-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .btn {
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { background: var(--surface2); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn.danger { background: var(--danger-light); color: var(--danger); border-color: #f5c6c6; }
+  .btn.sm { padding: 5px 10px; font-size: 12px; }
+
+  .page { display: none; padding: 24px 28px; }
+  .page.active { display: block; }
+
+  /* ── Cards & grid ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+  .kpi-card .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .kpi-card .value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .kpi-card .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .kpi-card.green .value { color: var(--accent); }
+  .kpi-card.warn .value { color: var(--warn); }
+  .kpi-card.danger .value { color: var(--danger); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+  .card-header h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .card-body { padding: 18px; }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0ede8;
+    color: var(--text);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #faf9f6; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .badge.green { background: var(--accent-light); color: var(--accent); }
+  .badge.red { background: var(--danger-light); color: var(--danger); }
+  .badge.orange { background: var(--warn-light); color: var(--warn); }
+  .badge.blue { background: var(--info-light); color: var(--info); }
+  .badge.gray { background: var(--surface2); color: var(--muted); }
+
+  /* ── Forms ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .form-group.full { grid-column: 1 / -1; }
+  label.field-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  input, select, textarea {
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 8px 11px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.15s;
+    outline: none;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.08);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* ── AI Panel ── */
+  .ai-panel {
+    background: #f8fffe;
+    border: 1px solid #c8e6c9;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .ai-panel .ai-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .ai-response {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    min-height: 40px;
+  }
+  .ai-response.loading { color: var(--muted); font-style: italic; }
+
+  .ai-input-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .ai-input-row input { flex: 1; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    width: 520px;
+    max-width: 95vw;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+  .modal-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-header h3 { font-size: 15px; font-weight: 500; }
+  .modal-close { background: none; border: none; cursor: pointer; font-size: 18px; color: var(--muted); padding: 4px; border-radius: 5px; }
+  .modal-close:hover { background: var(--surface2); }
+  .modal-body { padding: 22px; }
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* ── Alerts ── */
+  .alert {
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 14px;
+  }
+  .alert.warn { background: var(--warn-light); color: var(--warn); border: 1px solid #ffcc80; }
+  .alert.danger { background: var(--danger-light); color: var(--danger); border: 1px solid #f5c6c6; }
+  .alert.success { background: var(--accent-light); color: var(--accent); border: 1px solid #a5d6a7; }
+
+  /* ── Search bar ── */
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .search-bar input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    padding: 0;
+  }
+  .search-bar input:focus { box-shadow: none; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .section-header h3 { font-size: 15px; font-weight: 500; }
+
+  .gap-12 { display: flex; flex-direction: column; gap: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-20 { margin-top: 20px; }
+
+  /* ── Login ── */
+  #login-page {
+    position: fixed;
+    inset: 0;
+    background: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    flex-direction: column;
+    gap: 0;
+  }
+  .login-card {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 36px 40px;
+    width: 380px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+  }
+  .login-logo {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .login-logo .icon { font-size: 36px; display: block; margin-bottom: 8px; }
+  .login-logo h1 { font-size: 22px; font-weight: 600; }
+  .login-logo p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .login-form .form-group { margin-bottom: 14px; }
+  .login-form label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 5px; }
+  .login-form input { width: 100%; }
+  #login-error { display: none; }
+
+  /* ── Inventory badge bar ── */
+  .inv-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="icon">🐾</span>
+      <h1>VetCare</h1>
+      <p>Sistema de Gestión Veterinaria</p>
+    </div>
+    <div class="login-form gap-12">
+      <div class="form-group">
+        <label class="field-label">Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="usuario@vetcare.co" value="ivan@vetcare.co">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Contraseña</label>
+        <input type="password" id="login-password" placeholder="••••••••" value="Admin1234!">
+      </div>
+      <div id="login-error" class="alert danger">❌ Credenciales incorrectas.</div>
+      <button class="btn primary" style="width:100%;justify-content:center;margin-top:4px;" onclick="doLogin()">
+        Iniciar sesión
+      </button>
+    </div>
+    <p style="text-align:center;font-size:11px;color:var(--muted);margin-top:18px;">
+      Demo: admin / <code>Admin1234!</code>
+    </p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">🐾</span>
+    <h1>VetCare</h1>
+    <p>Clínica Veterinaria</p>
+  </div>
+  <nav>
+    <div class="nav-group-label">Principal</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="icon">📊</span> Panel general
+    </div>
+    <div class="nav-group-label">Clínica</div>
+    <div class="nav-item" onclick="showPage('pacientes',this)">
+      <span class="icon">🐕</span> Pacientes
+    </div>
+    <div class="nav-item" onclick="showPage('citas',this)">
+      <span class="icon">📅</span> Citas
+    </div>
+    <div class="nav-item" onclick="showPage('historial',this)">
+      <span class="icon">🩺</span> Historial clínico
+    </div>
+    <div class="nav-item" onclick="showPage('vacunas',this)">
+      <span class="icon">💉</span> Vacunas
+    </div>
+    <div class="nav-group-label">Administración</div>
+    <div class="nav-item" onclick="showPage('inventario',this)">
+      <span class="icon">📦</span> Inventario
+    </div>
+    <div class="nav-item" onclick="showPage('facturacion',this)">
+      <span class="icon">🧾</span> Facturación
+    </div>
+    <div class="nav-item" onclick="showPage('reportes',this)">
+      <span class="icon">📈</span> Reportes
+    </div>
+    <div class="nav-group-label">Sistema</div>
+    <div class="nav-item" onclick="showPage('usuarios',this)">
+      <span class="icon">👤</span> Usuarios
+    </div>
+    <div class="nav-item" onclick="showPage('asistente',this)">
+      <span class="icon">✨</span> Asistente IA
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="avatar" id="sidebar-avatar">IN</div>
+      <div class="user-info">
+        <p id="sidebar-name">Iván Nazareno</p>
+        <span id="sidebar-role">Administrador</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="topbar">
+    <h2 id="page-title">Panel general</h2>
+    <div class="topbar-actions">
+      <button class="btn sm" onclick="logout()">🔒 Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="kpi-grid">
+      <div class="kpi-card green">
+        <div class="label">Total pacientes</div>
+        <div class="value" id="kpi-pacientes">—</div>
+        <div class="sub">mascotas registradas</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Citas hoy</div>
+        <div class="value" id="kpi-citas">—</div>
+        <div class="sub" id="kpi-fecha">—</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="label">Ingresos del mes</div>
+        <div class="value" id="kpi-ingresos">—</div>
+        <div class="sub">facturas pagadas</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="label">Stock bajo</div>
+        <div class="value" id="kpi-stock">—</div>
+        <div class="sub">productos con alerta</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="label">Facturas pendientes</div>
+        <div class="value" id="kpi-facturas">—</div>
+        <div class="sub">por cobrar</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="card">
+        <div class="card-header">
+          <h3>Últimas citas</h3>
+          <button class="btn sm" onclick="showPage('citas',document.querySelector('[onclick*=citas]'))">Ver todas</button>
+        </div>
+        <div class="table-wrap">
+          <table id="dash-citas-table">
+            <thead><tr><th>Mascota</th><th>Veterinario</th><th>Fecha</th><th>Estado</th></tr></thead>
+            <tbody id="dash-citas-body"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Alertas de inventario</h3></div>
+        <div id="dash-alertas" class="card-body">
+          <p style="color:var(--muted);font-size:13px">Cargando alertas...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PACIENTES -->
+  <div id="page-pacientes" class="page">
+    <div class="section-header">
+      <h3>Pacientes registrados</h3>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="search-bar">
+          <span>🔍</span>
+          <input type="text" placeholder="Buscar por mascota, especie o dueño…" id="buscar-mascota" oninput="filtrarMascotas()">
+        </div>
+        <button class="btn primary" onclick="openModal('modal-mascota')">+ Nueva mascota</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Especie</th><th>Raza</th><th>Edad</th><th>Peso</th><th>Dueño</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-mascotas"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CITAS -->
+  <div id="page-citas" class="page">
+    <div class="section-header">
+      <h3>Gestión de citas</h3>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <input type="date" id="filtro-fecha-cita" style="width:160px;" onchange="loadCitas()">
+        <button class="btn primary" onclick="openModal('modal-cita')">+ Agendar cita</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Mascota</th><th>Veterinario</th><th>Fecha</th><th>Hora</th><th>Motivo</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-citas"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div id="page-historial" class="page">
+    <div class="section-header">
+      <h3>Historial clínico</h3>
+      <button class="btn primary" onclick="openModal('modal-historial')">+ Registrar consulta</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+      <div class="search-bar" style="flex:1">
+        <span>🔍</span>
+        <input type="text" placeholder="Buscar por mascota (nombre o ID)…" id="buscar-historial" oninput="filtrarHistorial()">
+      </div>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Mascota</th><th>Veterinario</th><th>Fecha</th><th>Diagnóstico</th><th>Tratamiento</th></tr></thead>
+          <tbody id="tabla-historial"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VACUNAS -->
+  <div id="page-vacunas" class="page">
+    <div class="section-header">
+      <h3>Registro de vacunas</h3>
+      <button class="btn primary" onclick="openModal('modal-vacuna')">+ Registrar vacuna</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Mascota</th><th>Tipo de vacuna</th><th>Fecha aplicación</th><th>Próxima dosis</th><th>Veterinario</th></tr></thead>
+          <tbody id="tabla-vacunas"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTARIO -->
+  <div id="page-inventario" class="page">
+    <div class="section-header">
+      <h3>Inventario de productos</h3>
+      <button class="btn primary" onclick="openModal('modal-producto')">+ Agregar producto</button>
+    </div>
+    <div id="inv-alertas-wrap"></div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Productos</h3>
+        <div class="search-bar" style="width:240px">
+          <span>🔍</span>
+          <input type="text" placeholder="Buscar producto…" id="buscar-producto" oninput="filtrarProductos()">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Código</th><th>Nombre</th><th>Categoría</th><th>Precio venta</th><th>Stock</th><th>Mín.</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-inventario"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTURACIÓN -->
+  <div id="page-facturacion" class="page">
+    <div class="section-header">
+      <h3>Facturación</h3>
+      <button class="btn primary" onclick="openModal('modal-factura')">+ Nueva factura</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Facturas</h3>
+        <select id="filtro-estado-factura" style="width:160px;" onchange="loadFacturas()">
+          <option value="">Todos los estados</option>
+          <option value="Pendiente">Pendiente</option>
+          <option value="Pagada">Pagada</option>
+          <option value="Anulada">Anulada</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Número</th><th>Dueño</th><th>Mascota</th><th>Fecha</th><th>Subtotal</th><th>IVA 19%</th><th>Total</th><th>Método pago</th><th>Estado</th></tr></thead>
+          <tbody id="tabla-facturas"><tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTES -->
+  <div id="page-reportes" class="page">
+    <div class="section-header"><h3>Reportes administrativos</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div class="card">
+        <div class="card-header"><h3>🐾 Especies más consultadas</h3></div>
+        <div class="card-body" id="rep-especies">
+          <p style="color:var(--muted);font-size:13px">Cargando...</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📅 Citas por estado</h3></div>
+        <div class="card-body" id="rep-citas-estado">
+          <p style="color:var(--muted);font-size:13px">Cargando...</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>💰 Resumen de ventas</h3></div>
+      <div class="card-body" id="rep-ventas">
+        <p style="color:var(--muted);font-size:13px">Cargando...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- USUARIOS -->
+  <div id="page-usuarios" class="page">
+    <div class="section-header">
+      <h3>Gestión de usuarios</h3>
+      <button class="btn primary" onclick="openModal('modal-usuario')">+ Nuevo usuario</button>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Creado</th></tr></thead>
+          <tbody id="tabla-usuarios"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASISTENTE IA -->
+  <div id="page-asistente" class="page">
+    <div class="section-header"><h3>Asistente VetCare IA</h3><span class="ai-badge">✨ Claude Sonnet</span></div>
+    <div class="card" style="height:calc(100vh - 170px);display:flex;flex-direction:column;">
+      <div id="chat-messages" style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div class="chat-msg assistant">
+          <div style="background:var(--accent-light);border:1px solid #a5d6a7;border-radius:10px 10px 10px 3px;padding:12px 15px;font-size:13px;line-height:1.6;max-width:80%;color:var(--text);">
+            ¡Hola! Soy el asistente de VetCare. Puedo ayudarte a interpretar datos del sistema, responder preguntas sobre medicamentos veterinarios, o guiarte en cualquier proceso clínico. ¿En qué te puedo ayudar?
+          </div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:16px 20px;">
+        <div style="display:flex;gap:10px;">
+          <input type="text" id="chat-input" placeholder="Escribe tu pregunta al asistente…" style="flex:1;" onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn primary" onclick="sendChat()">Enviar ↗</button>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn sm" onclick="quickAsk('¿Cuáles son los síntomas de parvovirus en perros?')">Parvovirus en perros</button>
+          <button class="btn sm" onclick="quickAsk('¿Qué dosis de amoxicilina se usa en gatos?')">Dosis amoxicilina gatos</button>
+          <button class="btn sm" onclick="quickAsk('¿Con qué frecuencia se debe vacunar un cachorro?')">Vacunas cachorros</button>
+          <button class="btn sm" onclick="quickAsk('Explícame el protocolo postoperatorio básico para cirugías menores.')">Protocolo postoperatorio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Modal: Nueva mascota / dueño -->
+<div class="modal-overlay" id="modal-mascota">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Registrar nueva mascota</h3>
+      <button class="modal-close" onclick="closeModal('modal-mascota')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <p style="font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;">Datos del dueño</p>
+      <div class="form-grid">
+        <div class="form-group full"><label class="field-label">Nombre completo *</label><input id="f-dueno-nombre" placeholder="Carlos Ramírez"></div>
+        <div class="form-group"><label class="field-label">Teléfono</label><input id="f-dueno-tel" placeholder="311-555-1234"></div>
+        <div class="form-group"><label class="field-label">Correo</label><input id="f-dueno-email" type="email" placeholder="correo@email.com"></div>
+        <div class="form-group full"><label class="field-label">Dirección</label><input id="f-dueno-dir" placeholder="Calle 5 #12"></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.6px;margin-top:8px;">Datos de la mascota</p>
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">Nombre *</label><input id="f-m-nombre" placeholder="Firulais"></div>
+        <div class="form-group">
+          <label class="field-label">Especie *</label>
+          <select id="f-m-especie"><option>Perro</option><option>Gato</option><option>Ave</option><option>Conejo</option><option>Otro</option></select>
+        </div>
+        <div class="form-group"><label class="field-label">Raza</label><input id="f-m-raza" placeholder="Labrador"></div>
+        <div class="form-group"><label class="field-label">Edad (años)</label><input id="f-m-edad" type="number" min="0" step="0.5" placeholder="3"></div>
+        <div class="form-group"><label class="field-label">Peso (kg)</label><input id="f-m-peso" type="number" min="0" step="0.1" placeholder="20.5"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-mascota')">Cancelar</button>
+      <button class="btn primary" onclick="registrarMascota()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Agendar cita -->
+<div class="modal-overlay" id="modal-cita">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Agendar nueva cita</h3>
+      <button class="modal-close" onclick="closeModal('modal-cita')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">ID Mascota *</label><input id="f-cita-mascota" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">ID Veterinario *</label><input id="f-cita-vet" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">Fecha *</label><input id="f-cita-fecha" type="date"></div>
+        <div class="form-group"><label class="field-label">Hora *</label><input id="f-cita-hora" type="time" value="09:00"></div>
+        <div class="form-group full"><label class="field-label">Motivo</label><input id="f-cita-motivo" placeholder="Revisión anual, vacuna, etc."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-cita')">Cancelar</button>
+      <button class="btn primary" onclick="agendarCita()">Agendar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Registrar consulta -->
+<div class="modal-overlay" id="modal-historial">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Registrar consulta clínica</h3>
+      <button class="modal-close" onclick="closeModal('modal-historial')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">ID Mascota *</label><input id="f-hc-mascota" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">ID Veterinario *</label><input id="f-hc-vet" type="number" min="1" placeholder="1"></div>
+        <div class="form-group full"><label class="field-label">Diagnóstico *</label><textarea id="f-hc-diag" placeholder="Descripción del diagnóstico…"></textarea></div>
+        <div class="form-group full"><label class="field-label">Tratamiento *</label><textarea id="f-hc-trat" placeholder="Medicamentos, procedimientos…"></textarea></div>
+        <div class="form-group full"><label class="field-label">Observaciones</label><textarea id="f-hc-obs" placeholder="Observaciones adicionales…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-historial')">Cancelar</button>
+      <button class="btn primary" onclick="registrarConsulta()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Vacuna -->
+<div class="modal-overlay" id="modal-vacuna">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Registrar vacuna</h3>
+      <button class="modal-close" onclick="closeModal('modal-vacuna')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">ID Mascota *</label><input id="f-vac-mascota" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">ID Veterinario</label><input id="f-vac-vet" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">Tipo de vacuna *</label><input id="f-vac-tipo" placeholder="Rabia, Triple felina…"></div>
+        <div class="form-group"><label class="field-label">Próxima dosis</label><input id="f-vac-prox" type="date"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-vacuna')">Cancelar</button>
+      <button class="btn primary" onclick="registrarVacuna()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Producto -->
+<div class="modal-overlay" id="modal-producto">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Agregar producto al inventario</h3>
+      <button class="modal-close" onclick="closeModal('modal-producto')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid triple">
+        <div class="form-group"><label class="field-label">Código *</label><input id="f-p-codigo" placeholder="MED-001"></div>
+        <div class="form-group"><label class="field-label">Nombre *</label><input id="f-p-nombre" placeholder="Amoxicilina 500mg"></div>
+        <div class="form-group">
+          <label class="field-label">Categoría</label>
+          <select id="f-p-cat"><option>medicamento</option><option>insumo</option><option>alimento</option></select>
+        </div>
+        <div class="form-group"><label class="field-label">Precio compra $</label><input id="f-p-pc" type="number" min="0" placeholder="3500"></div>
+        <div class="form-group"><label class="field-label">Precio venta $</label><input id="f-p-pv" type="number" min="0" placeholder="6000"></div>
+        <div class="form-group"><label class="field-label">Stock inicial</label><input id="f-p-stock" type="number" min="0" placeholder="50"></div>
+        <div class="form-group"><label class="field-label">Stock mínimo</label><input id="f-p-stmin" type="number" min="0" placeholder="10"></div>
+        <div class="form-group"><label class="field-label">Unidad</label><input id="f-p-unidad" placeholder="caja, frasco, unidad"></div>
+        <div class="form-group"><label class="field-label">Fecha vencimiento</label><input id="f-p-venc" type="date"></div>
+        <div class="form-group full"><label class="field-label">Descripción</label><input id="f-p-desc" placeholder="Descripción del producto"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-producto')">Cancelar</button>
+      <button class="btn primary" onclick="agregarProducto()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Factura -->
+<div class="modal-overlay" id="modal-factura">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Nueva factura</h3>
+      <button class="modal-close" onclick="closeModal('modal-factura')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">ID Dueño *</label><input id="f-fac-dueno" type="number" min="1" placeholder="1"></div>
+        <div class="form-group"><label class="field-label">ID Mascota</label><input id="f-fac-mascota" type="number" min="1" placeholder="1"></div>
+        <div class="form-group">
+          <label class="field-label">Método de pago</label>
+          <select id="f-fac-pago"><option>Efectivo</option><option>Tarjeta Crédito</option><option>Tarjeta Débito</option><option>Transferencia</option></select>
+        </div>
+        <div class="form-group"><label class="field-label">Observaciones</label><input id="f-fac-obs" placeholder="Consulta de rutina…"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <p style="font-size:12px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;">Ítems de factura</p>
+          <button class="btn sm" onclick="addItemRow()">+ Ítem</button>
+        </div>
+        <div id="items-container">
+          <div class="item-row form-grid" style="grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+            <input placeholder="Descripción (ej: Consulta General)" class="item-desc">
+            <input type="number" placeholder="Precio" class="item-precio" min="0">
+            <input type="number" placeholder="Cantidad" class="item-cant" min="1" value="1">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-factura')">Cancelar</button>
+      <button class="btn primary" onclick="crearFactura()">Crear factura</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Usuario -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Registrar nuevo usuario</h3>
+      <button class="modal-close" onclick="closeModal('modal-usuario')">✕</button>
+    </div>
+    <div class="modal-body gap-12">
+      <div class="form-grid">
+        <div class="form-group full"><label class="field-label">Nombre completo *</label><input id="f-u-nombre" placeholder="Nombre Apellido"></div>
+        <div class="form-group"><label class="field-label">Correo *</label><input id="f-u-email" type="email" placeholder="usuario@vetcare.co"></div>
+        <div class="form-group"><label class="field-label">Contraseña *</label><input id="f-u-pass" type="password" placeholder="Mínimo 8 caracteres"></div>
+        <div class="form-group">
+          <label class="field-label">Rol *</label>
+          <select id="f-u-rol"><option value="recepcionista">Recepcionista</option><option value="veterinario">Veterinario</option><option value="gerente">Gerente</option><option value="admin">Administrador</option><option value="soporte">Soporte</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-usuario')">Cancelar</button>
+      <button class="btn primary" onclick="registrarUsuario()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:999;display:none;">
+  <div id="toast-inner" style="padding:12px 18px;border-radius:9px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.15);max-width:320px;"></div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────
+let DB, currentUser = null;
+let mascotas = [], citas = [], historial = [], vacunas = [], inventario = [], facturas = [], usuarios = [];
+const chatHistory = [];
+
+// ── DB (SQLite via IndexedDB simulation) ───────
+// We'll use in-memory JS objects to mirror the Python DB structure
+// In a real deployment, this would call a backend API
+
+function initDB() {
+  // Demo seed data
+  DB = {
+    duenos: [
+      { id:1, nombre:'Carlos Ramírez', telefono:'311-555-1234', correo:'cramirez@email.com', direccion:'Calle 5 #12' },
+      { id:2, nombre:'María López', telefono:'320-777-9999', correo:'mlopez@email.com', direccion:'Carrera 8 #20' },
+      { id:3, nombre:'Pedro Sánchez', telefono:'314-222-3456', correo:'pedro@email.com', direccion:'Av. 15 #33' }
+    ],
+    mascotas: [
+      { id:1, nombre:'Firulais', especie:'Perro', raza:'Labrador', edad:3, peso:20.5, dueno_id:1 },
+      { id:2, nombre:'Michi', especie:'Gato', raza:'Siamés', edad:1.5, peso:4.2, dueno_id:2 },
+      { id:3, nombre:'Rocky', especie:'Perro', raza:'Bulldog', edad:5, peso:25, dueno_id:3 },
+      { id:4, nombre:'Luna', especie:'Gato', raza:'Persa', edad:2, peso:3.8, dueno_id:1 }
+    ],
+    veterinarios: [
+      { id:1, nombre:'Dr. Andrés Torres', especialidad:'Medicina General' },
+      { id:2, nombre:'Dra. Paula Ríos', especialidad:'Cirugía' }
+    ],
+    citas: [
+      { id:1, mascota_id:1, veterinario_id:1, fecha:'2026-04-29', hora:'09:00', motivo:'Revisión anual', estado:'Pendiente' },
+      { id:2, mascota_id:2, veterinario_id:1, fecha:'2026-04-29', hora:'10:00', motivo:'Vacuna triple', estado:'Pendiente' },
+      { id:3, mascota_id:3, veterinario_id:2, fecha:'2026-04-28', hora:'14:00', motivo:'Cirugía menor', estado:'Completada' },
+      { id:4, mascota_id:4, veterinario_id:1, fecha:'2026-04-30', hora:'11:00', motivo:'Control peso', estado:'Pendiente' }
+    ],
+    historial: [
+      { id:1, mascota_id:1, veterinario_id:1, fecha:'2026-04-15', diagnostico:'Otitis leve', tratamiento:'Gotas óticas 5 días', observaciones:'Revisar en 1 semana' },
+      { id:2, mascota_id:2, veterinario_id:1, fecha:'2026-04-10', diagnostico:'Dermatitis alérgica', tratamiento:'Antihistamínico oral 7 días', observaciones:'Evitar alérgenos' },
+      { id:3, mascota_id:3, veterinario_id:2, fecha:'2026-04-28', diagnostico:'Hernia inguinal', tratamiento:'Cirugía correctiva', observaciones:'Postoperatorio 2 semanas' }
+    ],
+    vacunas: [
+      { id:1, mascota_id:1, veterinario_id:1, tipo_vacuna:'Rabia', fecha_aplicacion:'2026-04-15', proxima_dosis:'2027-04-15' },
+      { id:2, mascota_id:2, veterinario_id:1, tipo_vacuna:'Triple felina', fecha_aplicacion:'2026-04-10', proxima_dosis:'2027-04-10' },
+      { id:3, mascota_id:3, veterinario_id:1, tipo_vacuna:'Parvovirus', fecha_aplicacion:'2026-03-01', proxima_dosis:'2027-03-01' }
+    ],
+    productos: [
+      { id:1, codigo:'MED-001', nombre:'Amoxicilina 500mg', categoria:'medicamento', precio_compra:3500, precio_venta:6000, stock_actual:45, stock_minimo:10, unidad:'caja', fecha_vencimiento:'2027-06-30', activo:1 },
+      { id:2, codigo:'MED-002', nombre:'Cetirizina 10mg', categoria:'medicamento', precio_compra:2000, precio_venta:4000, stock_actual:3, stock_minimo:5, unidad:'blíster', fecha_vencimiento:'2026-12-31', activo:1 },
+      { id:3, codigo:'INS-001', nombre:'Jeringas 5ml', categoria:'insumo', precio_compra:800, precio_venta:1500, stock_actual:90, stock_minimo:20, unidad:'caja x50', fecha_vencimiento:'', activo:1 },
+      { id:4, codigo:'MED-003', nombre:'Ivermectina 1%', categoria:'medicamento', precio_compra:5000, precio_venta:9000, stock_actual:4, stock_minimo:5, unidad:'frasco', fecha_vencimiento:'2026-06-01', activo:1 }
+    ],
+    facturas: [
+      { id:1, numero:'VET-2026-001', dueno_id:1, mascota_id:1, fecha:'2026-04-20', subtotal:62000, iva:11780, total:73780, metodo_pago:'Tarjeta Crédito', estado:'Pagada', observaciones:'Consulta de rutina' },
+      { id:2, numero:'VET-2026-002', dueno_id:2, mascota_id:2, fecha:'2026-04-22', subtotal:35000, iva:6650, total:41650, metodo_pago:'Efectivo', estado:'Pendiente', observaciones:'Vacunación triple' }
+    ],
+    usuarios: [
+      { id:1, nombre:'Iván Nazareno', correo:'ivan@vetcare.co', password_hash: sha256('Admin1234!'), rol:'admin', activo:1, created_at:'2026-04-01' },
+      { id:2, nombre:'Fernanda Mena', correo:'fernanda@vetcare.co', password_hash: sha256('Vet5678!'), rol:'veterinario', activo:1, created_at:'2026-04-01' },
+      { id:3, nombre:'Santiago Pineda', correo:'santiago@vetcare.co', password_hash: sha256('Rec9012!'), rol:'recepcionista', activo:1, created_at:'2026-04-01' },
+      { id:4, nombre:'Gerente VetCare', correo:'gerente@vetcare.co', password_hash: sha256('Ger3456!'), rol:'gerente', activo:1, created_at:'2026-04-01' }
+    ],
+    nextIds: { duenos:4, mascotas:5, citas:5, historial:4, vacunas:4, productos:5, facturas:3, usuarios:5 }
+  };
+}
+
+function sha256(str) {
+  // Simple hash simulation for demo (NOT real SHA-256)
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+  }
+  return 'hash_' + Math.abs(h).toString(16);
+}
+
+// ── Auth ───────────────────────────────────────
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const user = DB.usuarios.find(u => u.correo === email && u.password_hash === sha256(pass) && u.activo);
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('sidebar-name').textContent = user.nombre;
+    document.getElementById('sidebar-role').textContent = capitalize(user.rol);
+    document.getElementById('sidebar-avatar').textContent = user.nombre.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    loadAll();
+    toast('✅ Bienvenido, ' + user.nombre, 'success');
+  } else {
+    document.getElementById('login-error').style.display = 'flex';
+  }
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+// ── Navigation ─────────────────────────────────
+const pageTitles = {
+  dashboard:'Panel general', pacientes:'Pacientes', citas:'Gestión de citas',
+  historial:'Historial clínico', vacunas:'Vacunas', inventario:'Inventario',
+  facturacion:'Facturación', reportes:'Reportes', usuarios:'Usuarios', asistente:'Asistente IA'
+};
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[name] || name;
+  if (name === 'inventario') loadInventario();
+  if (name === 'facturacion') loadFacturas();
+  if (name === 'reportes') loadReportes();
+}
+
+// ── Load all ───────────────────────────────────
+function loadAll() {
+  loadDashboard();
+  loadMascotas();
+  loadCitas();
+  loadHistorial();
+  loadVacunas();
+  loadInventario();
+  loadFacturas();
+  loadUsuarios();
+  loadReportes();
+}
+
+// ── Dashboard ──────────────────────────────────
+function loadDashboard() {
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('kpi-pacientes').textContent = DB.mascotas.length;
+  document.getElementById('kpi-citas').textContent = DB.citas.filter(c=>c.fecha===hoy&&c.estado!=='Cancelada').length;
+  document.getElementById('kpi-fecha').textContent = 'Hoy ' + formatDate(hoy);
+  const mesInicio = new Date().toISOString().substring(0,7) + '-01';
+  const ingMes = DB.facturas.filter(f=>f.estado==='Pagada'&&f.fecha>=mesInicio).reduce((s,f)=>s+f.total,0);
+  document.getElementById('kpi-ingresos').textContent = '$' + ingMes.toLocaleString('es-CO');
+  const bajo = DB.productos.filter(p=>p.activo&&p.stock_actual<=p.stock_minimo).length;
+  document.getElementById('kpi-stock').textContent = bajo;
+  document.getElementById('kpi-facturas').textContent = DB.facturas.filter(f=>f.estado==='Pendiente').length;
+
+  // Ultimas citas
+  const recientes = [...DB.citas].sort((a,b)=>b.id-a.id).slice(0,4);
+  const tbody = document.getElementById('dash-citas-body');
+  tbody.innerHTML = recientes.length ? recientes.map(c=>{
+    const m = DB.mascotas.find(x=>x.id===c.mascota_id);
+    const v = DB.veterinarios.find(x=>x.id===c.veterinario_id);
+    return `<tr><td>${m?.nombre||'-'}</td><td>${v?.nombre||'-'}</td><td>${formatDate(c.fecha)}</td><td>${estadoBadge(c.estado)}</td></tr>`;
+  }).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:16px">Sin citas</td></tr>';
+
+  // Alertas
+  const alertasEl = document.getElementById('dash-alertas');
+  const alertas = DB.productos.filter(p=>p.activo&&p.stock_actual<=p.stock_minimo);
+  if (alertas.length) {
+    alertasEl.innerHTML = alertas.map(p=>`
+      <div class="alert warn" style="margin-bottom:8px;">
+        ⚠️ <strong>${p.nombre}</strong> — stock bajo: ${p.stock_actual} unidades (mín. ${p.stock_minimo})
+      </div>`).join('');
+  } else {
+    alertasEl.innerHTML = '<p style="color:var(--muted);font-size:13px">✅ Sin alertas de inventario</p>';
+  }
+}
+
+// ── Mascotas ───────────────────────────────────
+function loadMascotas() {
+  mascotas = DB.mascotas;
+  renderMascotas(mascotas);
+}
+
+function renderMascotas(data) {
+  const tbody = document.getElementById('tabla-mascotas');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin registros</td></tr>'; return; }
+  tbody.innerHTML = data.map(m => {
+    const d = DB.duenos.find(x=>x.id===m.dueno_id);
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">#${m.id}</td>
+      <td><strong>${m.nombre}</strong></td>
+      <td>${m.especie}</td>
+      <td>${m.raza||'-'}</td>
+      <td>${m.edad} años</td>
+      <td>${m.peso} kg</td>
+      <td>${d?.nombre||'-'}</td>
+      <td><button class="btn sm" onclick="verFicha(${m.id})">Ver ficha</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarMascotas() {
+  const t = document.getElementById('buscar-mascota').value.toLowerCase();
+  const filtro = DB.mascotas.filter(m=>{
+    const d = DB.duenos.find(x=>x.id===m.dueno_id);
+    return m.nombre.toLowerCase().includes(t) || m.especie.toLowerCase().includes(t) || (d?.nombre||'').toLowerCase().includes(t);
+  });
+  renderMascotas(filtro);
+}
+
+function verFicha(id) {
+  const m = DB.mascotas.find(x=>x.id===id);
+  const d = DB.duenos.find(x=>x.id===m.dueno_id);
+  if (!m || !d) return;
+  alert(`🐾 ${m.nombre} (${m.especie} - ${m.raza})\nEdad: ${m.edad} años | Peso: ${m.peso} kg\n\n👤 Dueño: ${d.nombre}\n📞 Tel: ${d.telefono}\n📧 ${d.correo}`);
+}
+
+function registrarMascota() {
+  const nombre = document.getElementById('f-dueno-nombre').value.trim();
+  const mNombre = document.getElementById('f-m-nombre').value.trim();
+  if (!nombre || !mNombre) { toast('⚠️ Completa los campos obligatorios', 'warn'); return; }
+
+  const did = DB.nextIds.duenos++;
+  DB.duenos.push({ id:did, nombre, telefono:document.getElementById('f-dueno-tel').value, correo:document.getElementById('f-dueno-email').value, direccion:document.getElementById('f-dueno-dir').value });
+
+  const mid = DB.nextIds.mascotas++;
+  DB.mascotas.push({ id:mid, nombre:mNombre, especie:document.getElementById('f-m-especie').value, raza:document.getElementById('f-m-raza').value, edad:parseFloat(document.getElementById('f-m-edad').value)||0, peso:parseFloat(document.getElementById('f-m-peso').value)||0, dueno_id:did });
+
+  closeModal('modal-mascota');
+  loadMascotas();
+  loadDashboard();
+  toast('✅ Mascota registrada exitosamente', 'success');
+}
+
+// ── Citas ──────────────────────────────────────
+function loadCitas() {
+  const filtroFecha = document.getElementById('filtro-fecha-cita').value;
+  let data = DB.citas;
+  if (filtroFecha) data = data.filter(c=>c.fecha===filtroFecha);
+  const tbody = document.getElementById('tabla-citas');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Sin citas para esta fecha</td></tr>'; return; }
+  tbody.innerHTML = data.map(c => {
+    const m = DB.mascotas.find(x=>x.id===c.mascota_id);
+    const v = DB.veterinarios.find(x=>x.id===c.veterinario_id);
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">#${c.id}</td>
+      <td>${m?.nombre||'-'}</td>
+      <td>${v?.nombre||'-'}</td>
+      <td>${formatDate(c.fecha)}</td>
+      <td>${c.hora}</td>
+      <td>${c.motivo||'-'}</td>
+      <td>${estadoBadge(c.estado)}</td>
+      <td>
+        ${c.estado==='Pendiente'?`<button class="btn sm danger" onclick="cancelarCita(${c.id})">Cancelar</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function agendarCita() {
+  const mid = parseInt(document.getElementById('f-cita-mascota').value);
+  const vid = parseInt(document.getElementById('f-cita-vet').value);
+  const fecha = document.getElementById('f-cita-fecha').value;
+  const hora = document.getElementById('f-cita-hora').value;
+  if (!mid||!vid||!fecha||!hora) { toast('⚠️ Completa todos los campos requeridos', 'warn'); return; }
+
+  const dup = DB.citas.find(c=>c.veterinario_id===vid&&c.fecha===fecha&&c.hora===hora&&c.estado!=='Cancelada');
+  if (dup) { toast('❌ El veterinario ya tiene cita ese día y hora', 'danger'); return; }
+
+  const id = DB.nextIds.citas++;
+  DB.citas.push({ id, mascota_id:mid, veterinario_id:vid, fecha, hora, motivo:document.getElementById('f-cita-motivo').value, estado:'Pendiente' });
+  closeModal('modal-cita');
+  loadCitas();
+  loadDashboard();
+  toast('✅ Cita agendada correctamente', 'success');
+}
+
+function cancelarCita(id) {
+  if (!confirm('¿Cancelar esta cita?')) return;
+  const c = DB.citas.find(x=>x.id===id);
+  if (c) c.estado = 'Cancelada';
+  loadCitas();
+  loadDashboard();
+  toast('✅ Cita cancelada', 'success');
+}
+
+// ── Historial ──────────────────────────────────
+function loadHistorial() {
+  renderHistorial(DB.historial);
+}
+
+function renderHistorial(data) {
+  const tbody = document.getElementById('tabla-historial');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Sin registros</td></tr>'; return; }
+  tbody.innerHTML = data.map(h=>{
+    const m = DB.mascotas.find(x=>x.id===h.mascota_id);
+    const v = DB.veterinarios.find(x=>x.id===h.veterinario_id);
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">#${h.id}</td>
+      <td>${m?.nombre||'-'}</td>
+      <td>${v?.nombre||'-'}</td>
+      <td>${formatDate(h.fecha)}</td>
+      <td style="max-width:200px">${h.diagnostico}</td>
+      <td style="max-width:200px">${h.tratamiento}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarHistorial() {
+  const t = document.getElementById('buscar-historial').value.toLowerCase();
+  const filtro = DB.historial.filter(h=>{
+    const m = DB.mascotas.find(x=>x.id===h.mascota_id);
+    return (m?.nombre||'').toLowerCase().includes(t) || String(h.mascota_id).includes(t);
+  });
+  renderHistorial(filtro);
+}
+
+function registrarConsulta() {
+  const mid = parseInt(document.getElementById('f-hc-mascota').value);
+  const vid = parseInt(document.getElementById('f-hc-vet').value);
+  const diag = document.getElementById('f-hc-diag').value.trim();
+  const trat = document.getElementById('f-hc-trat').value.trim();
+  if (!mid||!vid||!diag||!trat) { toast('⚠️ Completa los campos obligatorios', 'warn'); return; }
+  const id = DB.nextIds.historial++;
+  DB.historial.push({ id, mascota_id:mid, veterinario_id:vid, fecha:new Date().toISOString().split('T')[0], diagnostico:diag, tratamiento:trat, observaciones:document.getElementById('f-hc-obs').value });
+  closeModal('modal-historial');
+  loadHistorial();
+  toast('✅ Consulta registrada', 'success');
+}
+
+// ── Vacunas ────────────────────────────────────
+function loadVacunas() {
+  const tbody = document.getElementById('tabla-vacunas');
+  if (!DB.vacunas.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Sin registros</td></tr>'; return; }
+  tbody.innerHTML = DB.vacunas.map(v=>{
+    const m = DB.mascotas.find(x=>x.id===v.mascota_id);
+    const vet = DB.veterinarios.find(x=>x.id===v.veterinario_id);
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">#${v.id}</td>
+      <td>${m?.nombre||'-'}</td>
+      <td>${v.tipo_vacuna}</td>
+      <td>${formatDate(v.fecha_aplicacion)}</td>
+      <td>${v.proxima_dosis?formatDate(v.proxima_dosis):'—'}</td>
+      <td>${vet?.nombre||'-'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function registrarVacuna() {
+  const mid = parseInt(document.getElementById('f-vac-mascota').value);
+  const tipo = document.getElementById('f-vac-tipo').value.trim();
+  if (!mid||!tipo) { toast('⚠️ Completa los campos requeridos', 'warn'); return; }
+  DB.vacunas.push({ id:DB.nextIds.vacunas++, mascota_id:mid, veterinario_id:parseInt(document.getElementById('f-vac-vet').value)||1, tipo_vacuna:tipo, fecha_aplicacion:new Date().toISOString().split('T')[0], proxima_dosis:document.getElementById('f-vac-prox').value });
+  closeModal('modal-vacuna');
+  loadVacunas();
+  toast('✅ Vacuna registrada', 'success');
+}
+
+// ── Inventario ─────────────────────────────────
+function loadInventario() {
+  inventario = DB.productos.filter(p=>p.activo);
+  renderInventario(inventario);
+
+  const wrap = document.getElementById('inv-alertas-wrap');
+  const bajo = DB.productos.filter(p=>p.activo&&p.stock_actual<=p.stock_minimo);
+  wrap.innerHTML = bajo.length
+    ? `<div class="alert warn">⚠️ ${bajo.length} producto(s) con stock bajo: ${bajo.map(p=>p.nombre).join(', ')}</div>`
+    : '';
+}
+
+function renderInventario(data) {
+  const tbody = document.getElementById('tabla-inventario');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Sin productos</td></tr>'; return; }
+  tbody.innerHTML = data.map(p=>{
+    const bajo = p.stock_actual <= p.stock_minimo;
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px">${p.codigo}</td>
+      <td><strong>${p.nombre}</strong></td>
+      <td><span class="badge gray">${p.categoria}</span></td>
+      <td>$${p.precio_venta.toLocaleString('es-CO')}</td>
+      <td style="color:${bajo?'var(--danger)':'inherit'};font-weight:${bajo?'600':'400'}">${p.stock_actual}</td>
+      <td style="color:var(--muted)">${p.stock_minimo}</td>
+      <td>${p.fecha_vencimiento||'—'}</td>
+      <td>${bajo?'<span class="badge red">⚠️ Bajo</span>':'<span class="badge green">✅ OK</span>'}</td>
+      <td>
+        <button class="btn sm" onclick="movInventario(${p.id}, 'entrada')">+ Entrada</button>
+        <button class="btn sm danger" onclick="movInventario(${p.id}, 'salida')">- Salida</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarProductos() {
+  const t = document.getElementById('buscar-producto').value.toLowerCase();
+  renderInventario(DB.productos.filter(p=>p.activo&&(p.nombre.toLowerCase().includes(t)||p.codigo.toLowerCase().includes(t)||p.categoria.toLowerCase().includes(t))));
+}
+
+function movInventario(pid, tipo) {
+  const cant = parseInt(prompt(`Cantidad a ${tipo}:`));
+  if (!cant || cant <= 0) return;
+  const p = DB.productos.find(x=>x.id===pid);
+  if (!p) return;
+  if (tipo==='salida' && p.stock_actual < cant) { toast('❌ Stock insuficiente', 'danger'); return; }
+  p.stock_actual += tipo==='entrada' ? cant : -cant;
+  loadInventario();
+  loadDashboard();
+  toast(`✅ ${tipo==='entrada'?'Entrada':'Salida'} de ${cant} ${p.unidad} registrada`, 'success');
+}
+
+function agregarProducto() {
+  const codigo = document.getElementById('f-p-codigo').value.trim();
+  const nombre = document.getElementById('f-p-nombre').value.trim();
+  if (!codigo||!nombre) { toast('⚠️ Código y nombre son requeridos', 'warn'); return; }
+  if (DB.productos.find(p=>p.codigo===codigo)) { toast('❌ Código ya existe', 'danger'); return; }
+  DB.productos.push({ id:DB.nextIds.productos++, codigo, nombre, categoria:document.getElementById('f-p-cat').value, precio_compra:parseFloat(document.getElementById('f-p-pc').value)||0, precio_venta:parseFloat(document.getElementById('f-p-pv').value)||0, stock_actual:parseInt(document.getElementById('f-p-stock').value)||0, stock_minimo:parseInt(document.getElementById('f-p-stmin').value)||5, unidad:document.getElementById('f-p-unidad').value||'unidad', fecha_vencimiento:document.getElementById('f-p-venc').value, activo:1 });
+  closeModal('modal-producto');
+  loadInventario();
+  toast('✅ Producto agregado', 'success');
+}
+
+// ── Facturación ────────────────────────────────
+function loadFacturas() {
+  const filtro = document.getElementById('filtro-estado-factura').value;
+  let data = DB.facturas;
+  if (filtro) data = data.filter(f=>f.estado===filtro);
+  const tbody = document.getElementById('tabla-facturas');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Sin facturas</td></tr>'; return; }
+  tbody.innerHTML = data.map(f=>{
+    const d = DB.duenos.find(x=>x.id===f.dueno_id);
+    const m = DB.mascotas.find(x=>x.id===f.mascota_id);
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px">${f.numero}</td>
+      <td>${d?.nombre||'-'}</td>
+      <td>${m?.nombre||'-'}</td>
+      <td>${formatDate(f.fecha)}</td>
+      <td>$${f.subtotal.toLocaleString('es-CO')}</td>
+      <td>$${f.iva.toLocaleString('es-CO')}</td>
+      <td><strong>$${f.total.toLocaleString('es-CO')}</strong></td>
+      <td>${f.metodo_pago}</td>
+      <td>${estadoBadge(f.estado)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function addItemRow() {
+  const c = document.getElementById('items-container');
+  const div = document.createElement('div');
+  div.className = 'item-row form-grid';
+  div.style = 'grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:8px;';
+  div.innerHTML = '<input placeholder="Descripción" class="item-desc"><input type="number" placeholder="Precio" class="item-precio" min="0"><input type="number" placeholder="Cantidad" class="item-cant" min="1" value="1">';
+  c.appendChild(div);
+}
+
+function crearFactura() {
+  const did = parseInt(document.getElementById('f-fac-dueno').value);
+  const mid = parseInt(document.getElementById('f-fac-mascota').value)||null;
+  if (!did) { toast('⚠️ ID Dueño requerido', 'warn'); return; }
+
+  const rows = document.querySelectorAll('.item-row');
+  let subtotal = 0;
+  rows.forEach(r=>{
+    const p = parseFloat(r.querySelector('.item-precio').value)||0;
+    const q = parseInt(r.querySelector('.item-cant').value)||1;
+    subtotal += p * q;
+  });
+  const iva = Math.round(subtotal * 0.19);
+  const total = subtotal + iva;
+
+  const id = DB.nextIds.facturas++;
+  const num = 'VET-' + new Date().getFullYear() + '-' + String(id).padStart(3,'0');
+  DB.facturas.push({ id, numero:num, dueno_id:did, mascota_id:mid, fecha:new Date().toISOString().split('T')[0], subtotal, iva, total, metodo_pago:document.getElementById('f-fac-pago').value, estado:'Pendiente', observaciones:document.getElementById('f-fac-obs').value });
+
+  closeModal('modal-factura');
+  loadFacturas();
+  loadDashboard();
+  toast(`✅ Factura ${num} creada | Total: $${total.toLocaleString('es-CO')}`, 'success');
+}
+
+// ── Reportes ───────────────────────────────────
+function loadReportes() {
+  // Especies
+  const espec = {};
+  DB.historial.forEach(h=>{const m=DB.mascotas.find(x=>x.id===h.mascota_id); if(m)espec[m.especie]=(espec[m.especie]||0)+1;});
+  document.getElementById('rep-especies').innerHTML = Object.entries(espec).sort((a,b)=>b[1]-a[1]).map(([k,v])=>
+    `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;">
+      <span style="min-width:80px;font-weight:500">${k}</span>
+      <div style="flex:1;background:var(--surface2);border-radius:4px;height:8px;overflow:hidden;">
+        <div style="height:100%;background:var(--accent);width:${Math.min(100,v*30)}%;border-radius:4px;"></div>
+      </div>
+      <span style="color:var(--muted)">${v} consultas</span>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:13px">Sin datos</p>';
+
+  // Citas por estado
+  const cest = {};
+  DB.citas.forEach(c=>cest[c.estado]=(cest[c.estado]||0)+1);
+  document.getElementById('rep-citas-estado').innerHTML = Object.entries(cest).map(([k,v])=>
+    `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px;">
+      <span>${estadoBadge(k)}</span>
+      <strong>${v}</strong>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:13px">Sin datos</p>';
+
+  // Ventas
+  const pag = DB.facturas.filter(f=>f.estado==='Pagada');
+  const total = pag.reduce((s,f)=>s+f.total,0);
+  const iva = pag.reduce((s,f)=>s+f.iva,0);
+  document.getElementById('rep-ventas').innerHTML = `
+    <div class="kpi-grid" style="margin-bottom:0">
+      <div class="kpi-card green"><div class="label">Facturas pagadas</div><div class="value">${pag.length}</div></div>
+      <div class="kpi-card green"><div class="label">Ingresos totales</div><div class="value">$${total.toLocaleString('es-CO')}</div></div>
+      <div class="kpi-card"><div class="label">IVA recaudado</div><div class="value">$${iva.toLocaleString('es-CO')}</div></div>
+      <div class="kpi-card"><div class="label">Ticket promedio</div><div class="value">${pag.length?'$'+(total/pag.length).toLocaleString('es-CO',{maximumFractionDigits:0}):'—'}</div></div>
+    </div>`;
+}
+
+// ── Usuarios ───────────────────────────────────
+function loadUsuarios() {
+  const tbody = document.getElementById('tabla-usuarios');
+  tbody.innerHTML = DB.usuarios.map(u=>`<tr>
+    <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">#${u.id}</td>
+    <td><strong>${u.nombre}</strong></td>
+    <td>${u.correo}</td>
+    <td>${rolBadge(u.rol)}</td>
+    <td>${u.activo?'<span class="badge green">Activo</span>':'<span class="badge gray">Inactivo</span>'}</td>
+    <td style="color:var(--muted)">${u.created_at}</td>
+  </tr>`).join('');
+}
+
+function registrarUsuario() {
+  const nombre = document.getElementById('f-u-nombre').value.trim();
+  const correo = document.getElementById('f-u-email').value.trim();
+  const pass = document.getElementById('f-u-pass').value;
+  const rol = document.getElementById('f-u-rol').value;
+  if (!nombre||!correo||!pass) { toast('⚠️ Completa todos los campos', 'warn'); return; }
+  if (DB.usuarios.find(u=>u.correo===correo)) { toast('❌ Ya existe un usuario con ese correo', 'danger'); return; }
+  DB.usuarios.push({ id:DB.nextIds.usuarios++, nombre, correo, password_hash:sha256(pass), rol, activo:1, created_at:new Date().toISOString().split('T')[0] });
+  closeModal('modal-usuario');
+  loadUsuarios();
+  toast('✅ Usuario registrado', 'success');
+}
+
+// ── Chat IA ────────────────────────────────────
+function quickAsk(q) {
+  document.getElementById('chat-input').value = q;
+  sendChat();
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+
+  appendMsg('user', q);
+  chatHistory.push({ role:'user', content: q });
+
+  const loadDiv = appendMsg('assistant', '...', true);
+
+  try {
+    const systemPrompt = `Eres el asistente de VetCare, un sistema de gestión para clínica veterinaria.
+Tienes acceso al contexto del sistema: ${DB.mascotas.length} mascotas registradas, ${DB.citas.length} citas, ${DB.productos.length} productos en inventario.
+Responde en español, de forma concisa y profesional. Puedes dar consejos médicos veterinarios generales, interpretar datos del sistema, y guiar en procesos clínicos. No des diagnósticos definitivos — siempre recomienda consulta veterinaria presencial para casos específicos.`;
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || 'Sin respuesta del asistente.';
+    chatHistory.push({ role:'assistant', content:text });
+    loadDiv.innerHTML = text.replace(/\n/g,'<br>');
+  } catch(e) {
+    loadDiv.innerHTML = '⚠️ Error al conectar con el asistente. Verifica tu conexión.';
+    loadDiv.style.background = 'var(--danger-light)';
+    loadDiv.style.borderColor = '#f5c6c6';
+  }
+}
+
+function appendMsg(role, text, isLoad=false) {
+  const container = document.getElementById('chat-messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'chat-msg ' + role;
+  wrap.style.display = 'flex';
+  wrap.style.justifyContent = role==='user' ? 'flex-end' : 'flex-start';
+
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `
+    border-radius: ${role==='user'?'10px 10px 3px 10px':'10px 10px 10px 3px'};
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.65;
+    max-width: 80%;
+    background: ${role==='user'?'var(--accent)':'var(--accent-light)'};
+    border: 1px solid ${role==='user'?'var(--accent)':'#a5d6a7'};
+    color: ${role==='user'?'#fff':'var(--text)'};
+    ${isLoad?'font-style:italic;color:var(--muted);':''}
+  `;
+  bubble.innerHTML = isLoad ? '<span style="animation:blink 1s infinite">...</span>' : text;
+  wrap.appendChild(bubble);
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+  return bubble;
+}
+
+// ── Modals ─────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); });
+});
+
+// ── Toast ──────────────────────────────────────
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  const inner = document.getElementById('toast-inner');
+  const colors = { success:['var(--accent)','#fff'], danger:['var(--danger-light)','var(--danger)'], warn:['var(--warn-light)','var(--warn)'] };
+  const [bg, color] = colors[type]||colors.success;
+  inner.style.background = bg;
+  inner.style.color = color;
+  inner.style.border = `1px solid ${type==='success'?'#a5d6a7':type==='danger'?'#f5c6c6':'#ffcc80'}`;
+  inner.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(()=>{ t.style.display='none'; }, 3500);
+}
+
+// ── Helpers ────────────────────────────────────
+function formatDate(d) {
+  if (!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function estadoBadge(estado) {
+  const map = { 'Pendiente':'orange', 'Completada':'green', 'Cancelada':'gray', 'Reprogramada':'blue', 'Pagada':'green', 'Anulada':'red' };
+  return `<span class="badge ${map[estado]||'gray'}">${estado}</span>`;
+}
+
+function rolBadge(rol) {
+  const map = { admin:'blue', veterinario:'green', recepcionista:'gray', gerente:'orange', soporte:'red' };
+  return `<span class="badge ${map[rol]||'gray'}">${capitalize(rol)}</span>`;
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
+
+// ── Init ───────────────────────────────────────
+initDB();
+document.getElementById('filtro-fecha-cita').value = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
