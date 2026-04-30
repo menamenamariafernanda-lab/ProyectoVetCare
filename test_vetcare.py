@@ -1,8 +1,8 @@
 """
 ╔══════════════════════════════════════════════════════════════════╗
-║     VETCARE — SUITE DE PRUEBAS AUTOMATIZADAS (pytest)           ║
-║     Patrón AAA: Arrange → Act → Assert                          ║
-║     Ejecutar: python -m pytest test_vetcare.py -v               ║
+║     VETCARE — SUITE DE PRUEBAS AUTOMATIZADAS (pytest)            ║
+║     Patrón AAA: Arrange → Act → Assert                           ║
+║     Ejecutar: python -m pytest test_vetcare.py -v                ║
 ╚══════════════════════════════════════════════════════════════════╝
 """
 
@@ -572,8 +572,8 @@ class TestReportes:
         kpis = gr.panel_gerente()
         # Assert
         claves_esperadas = {"total_pacientes", "citas_hoy", "ingresos_mes",
-                             "productos_stock_bajo", "facturas_pendientes",
-                             "top_especies_consultadas"}
+                            "productos_stock_bajo", "facturas_pendientes",
+                            "top_especies_consultadas"}
         assert claves_esperadas.issubset(kpis.keys())
 
     def test_CP044_reporte_ventas_estructura(self, gr):
