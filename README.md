@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🐾 VetCare — Sistema de Gestión para Clínica Veterinaria
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)
@@ -276,3 +277,7 @@ el aviso de copyright original.
 Universidad · Grupo 8 · Entrega: 17 de abril de 2026
 
 > *"El código limpio hace una cosa, y la hace bien."* — Robert C. Martin
+=======
+# ClinicaVetCare-
+La Clinica VetCare implementa un sistema integral de gestión veterinaria que permita registrar mascotas y sus dueños, administrar historiales clínicos, programar citas, controlar inventarios, gestionar facturación y generar reportes administrativos
+>>>>>>> aabde5fabb81cb5b314bd2dc442433637019468a
